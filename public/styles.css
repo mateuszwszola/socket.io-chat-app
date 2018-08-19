@@ -75,3 +75,7 @@ form button {
 #users li:nth-child(odd) {
   background: #eee;
 }
+
+#feedback {
+  color: gray;
+}
