@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Socket.IO chat example</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="messages__container">
+      <h2 class="messages__title">Messages</h2>
+      <ul id="messages"></ul>
+    </div>
+    <div class="users__container">
+      <h2 class="users__title">Users</h2>
+      <ul id="users"></ul>
+    </div>
+  </div>
+  
+  <form>
+    <input type="text" id="m" autocomplete="off">
+    <button>Send</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/chat.js"></script>
+</body>
+</html>
