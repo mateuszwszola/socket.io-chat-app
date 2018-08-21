@@ -1,27 +1,34 @@
-const form = document.querySelector('form');
-const input = document.getElementById('m');
-const messages = document.getElementById('messages');
-const users = document.getElementById('users');
-const feedback = document.getElementById('feedback');
-
-function createElement(element, value) {
-  const newElement = document.createElement(element);
-  newElement.textContent = value;
-  return newElement;
-}
-
-function appendNewMessage(msg) {
-  const newMessageElement = createElement('li', msg);
-  messages.appendChild(newMessageElement);
-}
-
 (function() {
+  const form = document.querySelector('form');
+  const input = document.getElementById('m');
+  const messages = document.getElementById('messages');
+  const users = document.getElementById('users');
+  const feedback = document.getElementById('feedback');
+  const onlineUsers = document.getElementById('online');
+
+  function createElement(element, value) {
+    const newElement = document.createElement(element);
+    newElement.textContent = value;
+    return newElement;
+  }
+
+  function appendNewMessage(msg) {
+    const newMessageElement = createElement('li', msg);
+    messages.appendChild(newMessageElement);
+  }
+
+  function updateOnlineUsers(users) {
+    let newUsers = users.filter(user => user.username !== username && user.room === roomName);
+    newUsers = newUsers.map(user => `<li>${user.username}</li>`);
+    onlineUsers.innerHTML = newUsers;
+  }
+
   var socket = io();
 
   let username = prompt("What is your name?");
   username = username || 'User';
   let roomName = prompt("Type in the room name");
-  roomName = roomName || '/';
+  roomName = roomName || 'room';
 
   sessionStorage.setItem('username', username);
   sessionStorage.setItem('roomname', roomName);
@@ -30,6 +37,8 @@ function appendNewMessage(msg) {
     username: username,
     roomName: roomName
   });
+
+  // socket.emit('users');
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -40,6 +49,7 @@ function appendNewMessage(msg) {
     socket.emit('chat message', message);
 
     input.value = '';
+    // Blur will cause focusout event call which will emit event to the server
     input.blur();
     return false;
   });
@@ -64,9 +74,14 @@ function appendNewMessage(msg) {
     feedback.innerHTML = '';
   });
 
+  socket.on('users', function(users) {
+    updateOnlineUsers(users);
+    console.log('users', users);
+  });
+
   socket.on('user connect', function(msg) {
-    const newUserElement = createElement('li', msg);
-    users.appendChild(newUserElement);
+    const newMessage = createElement('li', msg);
+    users.appendChild(newMessage);
   });
 
   socket.on('user disconnect', function(msg) {
