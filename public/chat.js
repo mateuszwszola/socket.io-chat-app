@@ -19,7 +19,8 @@
 
   function updateOnlineUsers(users) {
     let newUsers = users.filter(user => user.username !== username && user.room === roomName);
-    newUsers = newUsers.map(user => `<li>${user.username}</li>`);
+    newUsers = newUsers.map(user => '<li>' + user.username + '</li>');
+    newUsers = newUsers.join('');
     onlineUsers.innerHTML = newUsers;
   }
 
@@ -37,8 +38,6 @@
     username: username,
     roomName: roomName
   });
-
-  // socket.emit('users');
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
