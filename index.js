@@ -4,13 +4,14 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/socket-chat-app');
+mongoose.connect(
+  'mongodb://localhost/socket-chat-app',
+  { useNewUrlParser: true }
+);
 var db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  console.log('DB connected!');
-});
+db.once('open', console.log.bind(console, 'Connection open!'));
 
 var User = require('./models/User');
 
@@ -26,7 +27,7 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-io.on('connection', function(socket)  {
+io.on('connection', function(socket) {
   socket.on('user connect', function(data) {
     socket.username = data.username;
     socket.room = data.roomName;
@@ -49,7 +50,6 @@ io.on('connection', function(socket)  {
       })
       .catch(err => console.error(err));
 
-  
     const msg = socket.username + ' connected to ' + socket.room;
     socket.broadcast.to(socket.room).emit('user connect', msg);
   });
@@ -69,13 +69,15 @@ io.on('connection', function(socket)  {
     socket.broadcast.to(socket.room).emit('user disconnect', msg);
     socket.leave(socket.room);
   });
-  
+
   socket.on('chat message', function(msg) {
     socket.broadcast.to(socket.room).emit('chat message', msg);
   });
 
   socket.on('typing', function() {
-    socket.broadcast.to(socket.room).emit('typing', socket.username + ' is typing!');
+    socket.broadcast
+      .to(socket.room)
+      .emit('typing', socket.username + ' is typing!');
   });
 
   socket.on('not typing', function() {
